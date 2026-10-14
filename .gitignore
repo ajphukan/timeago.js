@@ -1,7 +1,11 @@
-.project
-.settings
-.idea/*
-.DS_Store
+node_modules/
+npm-debug.*
+.idea
+coverage
+package-lock.json
+lib
+esm
+dist
 
-node_modules/*
-
+timeago.full.min.js
+timeago.min.js

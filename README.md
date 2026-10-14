@@ -1,138 +1,167 @@
 # timeago.js
 
-> **timeago.js** is a simple library (less then `2 kb`) that is used to format datetime with `*** time ago` statement. eg: '3 hours ago'.
+> **timeago.js** is a nano library(less than `2 kb`)  used to format datetime with `*** time ago` statement. eg: '3 hours ago'.
 
- - Localization supported.
+ - i18n supported.
  - Time `ago` and time `in` supported.
  - Real-time render supported.
- - Nodejs and browserjs supported.
+ - Node and browser supported.
  - Well tested.
 
-[Official website](http://timeago.org/). 中文版说明文档[点这里](README_zh.md)。 React version here: [timeago-react](https://github.com/hustcc/timeago-react). Python version here: [timeago](https://github.com/hustcc/timeago).
+[Official website](https://timeago.ling.pub/). React version here: [timeago-react](https://github.com/hustcc/timeago-react). Python version here: [timeago](https://github.com/hustcc/timeago).
 
-[![Build Status](https://travis-ci.org/hustcc/timeago.js.svg?branch=master)](https://travis-ci.org/hustcc/timeago.js) [![npm](https://img.shields.io/npm/v/timeago.js.svg?style=flat-square)](https://www.npmjs.com/package/timeago.js) [![npm](https://img.shields.io/npm/dt/timeago.js.svg?style=flat-square)](https://www.npmjs.com/package/timeago.js) [![npm](https://img.shields.io/npm/l/timeago.js.svg?style=flat-square)](https://www.npmjs.com/package/timeago.js)
+[![npm Version](https://img.shields.io/npm/v/timeago.js.svg)](https://www.npmjs.com/package/timeago.js)
+[![unpkg](https://img.shields.io/npm/v/timeago.js?label=cdn)](https://unpkg.com/browse/timeago.js/)
+[![Build Status](https://github.com/hustcc/timeago.js/workflows/build/badge.svg)](https://github.com/hustcc/timeago.js/actions)
+[![Coverage Status](https://coveralls.io/repos/github/hustcc/timeago.js/badge.svg?branch=master)](https://coveralls.io/github/hustcc/timeago.js?branch=master)
+[![Dist gzip](https://img.badgesize.io/https://unpkg.com/timeago.js/dist/timeago.min.js?compression=gzip)](https://unpkg.com/timeago.js/dist/timeago.min.js)
+[![npm Download](https://img.shields.io/npm/dm/timeago.js.svg)](https://www.npmjs.com/package/timeago.js)
+[![npm License](https://img.shields.io/npm/l/timeago.js.svg)](https://www.npmjs.com/package/timeago.js)
+
 
 Such as
 
-```
+```plain
 just now
 12 seconds ago
-3 minutes ago
 2 hours ago
 3 days ago
 3 weeks ago
-6 months ago
 2 years ago
 
 in 12 seconds
 in 3 minutes
-in 2 hours
 in 24 days
 in 6 months
-in 2 years
 ```
 
 
-# 1. Usage
+## Usage
 
-**1. Install timeago.js**
+ - install
 
-```sh
+```bash
 npm install timeago.js
 ```
 
-**2. import timeago.js**
+ - import
 
-
-ES6 style is supported, then get global object: `timeago`.
-
-```js
-import timeago from 'timeago.js';
-
-// or
-
-var timeago = require("timeago.js");
+```ts
+import { format, render, cancel, register } from 'timeago.js';
 ```
 
-or link with `script` in html files:
+or import with `script` tag in html file and access global variable `timeago`.
 
-```js
+```html
 <script src="dist/timeago.min.js"></script>
 ```
 
-**3. Use class `timeago`**
+ - example
 
-```js
-var timeago = timeago();
-timeago.format('2016-06-12')
+```ts
+// format the time with locale
+format('2016-06-12', 'en_US');
 ```
 
+## CDN 
 
-# 2. Detailed Usage
+Alternatively to NPM, you can also use a CDN which will reflect the latest version as soon as it is published to npm.
 
-**1. Set relative date**
-
-`timeago` is relative to the current date default. You can set it yourself.
-
-```js
-var timeago = timeago('2016-06-10 12:12:12'); // set the relative date here.
-timeago.format('2016-06-12', 'zh_CN');
-```
-
-**2. Use timestamp**
-
-```
-timeago().format(new Date().getTime() - 11 * 1000 * 60 * 60); // will get '11 hours ago'
-```
-
-**3. Automatic rendering**
-
-HTML code：
 ```html
-<div class="need_to_be_rendered" data-timeago="2016-06-30 09:20:00"></div>
-```
-js code
-```js
-// use render to render it in realtime
-timeago().render(document.querySelectorAll('.need_to_be_rendered'), 'zh_CN');
-// or cancel realtime render
-timeago().cancel()
+<script src="//unpkg.com/timeago.js"></script>
 ```
 
-The input API `render` should be DOM object/array, support pure Javascript, Node, and jQuery DOM object.
+## API
 
-The API `cancel` will clear all the render timers and release all resources.
+There only 4 API below.
 
-The DOM object should have the attribute `data-timeago` with date formated string.
+ - **format**
 
-**4. Localization**
+> `format(date[, locale = 'en_US', opts])`, format a Date instance / timestamp / date string to string.
 
-Default locale is **`en`**, and the library supports `en` and `zh_CN`.
+```ts
+import { format } from 'timeago.js';
 
-```js
-var timeago = timeago();
-timeago.format('2016-06-12', 'zh_CN');
+// format timestamp
+format(1544666010224);
+
+// format date instance
+format(new Date(1544666010224));
+
+// format date string
+format('2018-12-12');
+
+// format with locale
+format(1544666010224, 'zh_CN');
+
+// format with locale and relative date
+format(1544666010224, 'zh_CN', { relativeDate: '2018-11-11' });
+
+// e.g.
+format(Date.now() - 11 * 1000 * 60 * 60); // returns '11 hours ago'
+``` 
+
+The default locale is `en_US`, and the library contains `en_US` and `zh_CN` build-in.
+
+ - **render** & **cancel**
+   
+> `render(dom[, locale = 'en_US', opts])`  
+> `cancel([dom])`
+
+> Make a dom with `datetime` attribute automatic rendering and cancel.
+
+HTML code:
+
+```html
+<div class="timeago" datetime="2016-06-30 09:20:00"></div>
 ```
 
-You can change the locale in the constructor or use the `setLocale` method;
+Javascript code:
 
-```js
-var timeago = timeago(null, 'zh_CN');
-// or
-timeago().setLocale('zh_CN');
+```ts
+import { render, cancel } from 'timeago.js';
+
+const nodes = document.querySelectorAll('.timeago');
+
+// use render method to render nodes in real time
+render(nodes, 'zh_CN');
+
+// render with opts
+// render(nodes, 'en_US', { minInterval: 3 });
+
+// cancel all real-time render task
+cancel();
+
+// or cancel for the specific one
+cancel(nodes[0])
 ```
 
-**5. Register local language**
+The 3rd parameter `opts` contains:
 
-You can `register` your own language. Like below, e.g.
+```ts
+export type Opts = {
+  /** the relative date */
+  readonly relativeDate?: TDate;
+  /** the realtime min update interval */
+  readonly minInterval?: number;
+};
+``` 
 
-```js
-// the local dict example is below.
-var test_local_dict = function(number, index) {
+> The DOM object should have the attribute `datetime` with date formatted string.
+
+ - **register**
+
+> `register(locale, localeFunc)`, register a new locale, build-in locale contains: `en_US`, `zh_CN`, [all locales here](src/lang).
+
+You can register your own language with `register` API.
+
+```ts
+const localeFunc = (number: number, index: number, totalSec: number): [string, string] => {
   // number: the timeago / timein number;
   // index: the index of array below;
+  // totalSec: total seconds between date to be formatted and today's date;
   return [
-    ['just now', 'a while'],
+    ['just now', 'right now'],
     ['%s seconds ago', 'in %s seconds'],
     ['1 minute ago', 'in 1 minute'],
     ['%s minutes ago', 'in %s minutes'],
@@ -148,28 +177,23 @@ var test_local_dict = function(number, index) {
     ['%s years ago', 'in %s years']
   ][index];
 };
+// register your locale with timeago
+register('my-locale', localeFunc);
 
-var timeago = timeago();
-timeago.register('test_local', test_local_dict);
-
-timeago.format('2016-06-12', 'test_local');
+// use it
+format('2016-06-12', 'my-locale');
 ```
 
-You can see [locales](locales) dir for more locales. 
 
-[Locale contributions](#3-contributions) are welcome, thank you for submiting a GitHub pull request for corrections or additional languages. ^_^~
+## Contributions
 
-
-# 3. Contributions
-
-1. The website is based on [rmm5t/jquery-timeago](https://github.com/rmm5t/jquery-timeago) which is a nice and featured project but depends on jQuery.
-
+1. The website is based on [rmm5t/jquery-timeago](https://github.com/rmm5t/jquery-timeago) which is a nice and featured project but it depends on jQuery.
 2. **locale translations**: The library needs more locale translations. You can:
 
- - Open an issue to write the locale translations, or submit a pull request. How to ? see [en's translation](locales/en.js). 
- - Please **test** the locale by exec `npm test` or `node tests/locales_test.js`. How to write testcase, see [en's testcases](tests/locales/en.js).
+ - Open an issue to write the locale translations, or submit a pull request. How to ? see [locales translation](src/lang/).
+ - Please **test** the locale by exec `npm test`. How to write test cases, see [locales test cases](__tests__/lang/).
 
 
-# 4. LICENSE
+## LICENSE
 
-MIT
+MIT@[hustcc](https://github.com/hustcc)
